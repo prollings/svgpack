@@ -120,8 +120,10 @@ void SvgLayout::exportSvg(QString path)
     gen.setSize(QSize(width, height));
     gen.setViewBox(QRect(0, 0, width, height));
 
+    sizeRect->hide();
     QPainter painter;
     painter.begin(&gen);
     scene()->render(&painter);
     painter.end();
+    sizeRect->show();
 }
