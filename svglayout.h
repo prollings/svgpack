@@ -23,7 +23,7 @@ public:
 
     void setDrawBoundingBoxes(bool draw);
 
-    void layoutItems();
+    void layoutItems(qreal marginWidth = 0, qreal marginHeight = 0);
 
     void exportSvg(QString path);
 

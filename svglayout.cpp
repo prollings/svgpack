@@ -63,7 +63,7 @@ void SvgLayout::setDrawBoundingBoxes(bool draw)
     }
 }
 
-void SvgLayout::layoutItems()
+void SvgLayout::layoutItems(qreal marginWidth, qreal marginHeight)
 {
     QVector<QGraphicsItem*> items {};
     for (auto item : scene()->items()) {
@@ -76,19 +76,22 @@ void SvgLayout::layoutItems()
         return a->sceneBoundingRect().height() > b->sceneBoundingRect().height();
     };
     std::sort(items.begin(), items.end(), predicate);
+
     // create single, all encompassing, space
     QVector<QRect> spaces {
         QRect(0, 0, this->width, this->height)
     };
+
     auto ep_eq = [](auto a, auto b) {
         return std::abs(a - b) < 0.1;
     };
+
     // look through items for biggest item to fit into smallest space
     for (int iii = 0; iii < items.length(); ++iii) {
         auto item = items[iii];
         auto bb = item->boundingRect();
-        auto bbw = bb.width();
-        auto bbh = bb.height();
+        auto bbw = bb.width() + marginWidth;
+        auto bbh = bb.height() + marginHeight;
         for (int jjj = spaces.length() - 1; jjj >= 0; --jjj) {
             auto& space = spaces[jjj];
             auto sw = space.width();
@@ -120,10 +123,8 @@ void SvgLayout::exportSvg(QString path)
     gen.setSize(QSize(width, height));
     gen.setViewBox(QRect(0, 0, width, height));
 
-    sizeRect->hide();
     QPainter painter;
     painter.begin(&gen);
     scene()->render(&painter);
     painter.end();
-    sizeRect->show();
 }
