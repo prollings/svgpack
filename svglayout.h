@@ -23,6 +23,8 @@ public:
 
     void setDrawBoundingBoxes(bool draw);
 
+    void setPadding(double padding);
+
     void layoutItems();
 
     void exportSvg(QString path);

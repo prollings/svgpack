@@ -26,6 +26,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_padding_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
 };

@@ -39,6 +39,7 @@ void MainWindow::on_load_clicked()
     for (auto name : filenames) {
         ui->svgLayout->addItem(name);
     }
+    ui->svgLayout->setPadding(ui->padding->value());
     ui->svgLayout->layoutItems();
 }
 
@@ -66,4 +67,10 @@ void MainWindow::on_pushButton_clicked()
         "SVG (*.svg)"
     );
     ui->svgLayout->exportSvg(filename);
+}
+
+void MainWindow::on_padding_valueChanged(double padding)
+{
+    ui->svgLayout->setPadding(padding);
+    ui->svgLayout->layoutItems();
 }

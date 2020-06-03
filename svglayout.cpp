@@ -5,6 +5,14 @@
 #include <QDebug>
 #include <QTimer>
 #include <QSvgGenerator>
+#include "layoutitem.h"
+
+enum ItemType {
+    CONTAINER,
+    BB,
+    SVG,
+};
+
 
 SvgLayout::SvgLayout(QWidget* parent) :
     QGraphicsView(parent),
@@ -22,13 +30,26 @@ SvgLayout::SvgLayout(QWidget* parent) :
 bool SvgLayout::addItem(QString path)
 {
     auto s = scene();
+
+    auto container = new LayoutItem();
+    container->setData(0, ItemType::CONTAINER);
+
     auto item = new QGraphicsSvgItem(path);
+    item->setData(0, ItemType::SVG);
     item->setFlags(QGraphicsItem::ItemClipsToShape);
     item->setCacheMode(QGraphicsItem::NoCache);
     item->setZValue(0);
     item->setPos(0, 0);
-    item->setData(0, "svg");
-    s->addItem(item);
+    container->setSvg(item);
+
+    auto bb = new QGraphicsRectItem();
+    bb->setData(0, ItemType::BB);
+    bb->setRect(item->boundingRect());
+    bb->setPen(QColor(0, 255, 0, 255));
+    bb->hide();
+    container->setBb(bb);
+
+    s->addItem(container);
 
     return true;
 }
@@ -42,23 +63,26 @@ void SvgLayout::setSize(size_t width, size_t height)
 
 void SvgLayout::setDrawBoundingBoxes(bool draw)
 {
-    auto s = scene();
-    if (draw) {
-        QPen pen(Qt::green, 1, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin);
-        for (auto item : s->items()) {
-            if (item->data(0) == "svg") {
-                auto bb = new QGraphicsRectItem(item->boundingRect());
-                bb->setPen(pen);
-                bb->setData(0, "bb");
-                scene()->addItem(bb);
-            }
+    for (auto item : scene()->items()) {
+        if (item->data(0) == ItemType::BB) {
+            item->setVisible(draw);
         }
-    } else {
-        for (auto item : s->items()) {
-            if (item->data(0) == "bb") {
-                s->removeItem(item);
-                delete item;
-            }
+    }
+}
+
+void SvgLayout::setPadding(double padding)
+{
+    for (auto item : scene()->items()) {
+        if (item->data(0) == ItemType::CONTAINER) {
+            auto group = qgraphicsitem_cast<LayoutItem*>(item);
+            auto svg = group->svg();
+            auto bb = group->bb();
+            group->setPos(0, 0);
+            svg->setPos(0, 0);
+            bb->setPos(0, 0);
+            bb->setRect(svg->boundingRect());
+            svg->setPos(padding, padding);
+            bb->setRect(bb->rect().adjusted(0, 0, padding * 2, padding * 2));
         }
     }
 }
@@ -67,13 +91,13 @@ void SvgLayout::layoutItems()
 {
     QVector<QGraphicsItem*> items {};
     for (auto item : scene()->items()) {
-        if (item->data(0) == "svg") {
+        if (item->data(0) == ItemType::CONTAINER) {
             items.push_back(item);
         }
     }
     // sort by height
     auto predicate = [](QGraphicsItem* a, QGraphicsItem* b) {
-        return a->sceneBoundingRect().height() > b->sceneBoundingRect().height();
+        return a->childrenBoundingRect().height() > b->childrenBoundingRect().height();
     };
     std::sort(items.begin(), items.end(), predicate);
     // create single, all encompassing, space
@@ -86,7 +110,7 @@ void SvgLayout::layoutItems()
     // look through items for biggest item to fit into smallest space
     for (int iii = 0; iii < items.length(); ++iii) {
         auto item = items[iii];
-        auto bb = item->boundingRect();
+        auto bb = item->childrenBoundingRect();
         auto bbw = bb.width();
         auto bbh = bb.height();
         for (int jjj = spaces.length() - 1; jjj >= 0; --jjj) {
