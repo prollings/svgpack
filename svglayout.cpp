@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <QSvgGenerator>
+#include <QFileInfo>
 #include "layoutitem.h"
 
 enum ItemType {
@@ -13,10 +14,15 @@ enum ItemType {
     SVG,
 };
 
+enum ContainerData {
+    SVG_IDX = 1,
+    BB_IDX = 2,
+};
 
 SvgLayout::SvgLayout(QWidget* parent) :
     QGraphicsView(parent),
-    sizeRect(nullptr)
+    sizeRect(nullptr),
+    last_id(0)
 {
     // init things once event timer starts
     QTimer::singleShot(0, this, [this](){
@@ -31,8 +37,11 @@ bool SvgLayout::addItem(QString path)
 {
     auto s = scene();
 
+    auto id = last_id++;
+
     auto container = new LayoutItem();
     container->setData(0, ItemType::CONTAINER);
+    container->setData(1, id);
 
     auto item = new QGraphicsSvgItem(path);
     item->setData(0, ItemType::SVG);
@@ -50,8 +59,20 @@ bool SvgLayout::addItem(QString path)
     container->setBb(bb);
 
     s->addItem(container);
+    auto name = QFileInfo(path).fileName().remove(".svg", Qt::CaseInsensitive);
+    emit itemAdded(name, id);
 
     return true;
+}
+
+void SvgLayout::removeItem(int id)
+{
+    for (auto item : scene()->items()) {
+        if (item->data(1) == id) {
+            scene()->removeItem(item);
+            break;
+        }
+    }
 }
 
 void SvgLayout::setSize(size_t width, size_t height)

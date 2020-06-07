@@ -15,12 +15,17 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->svgLayout->setScene(new QGraphicsScene(this));
-    // i hate it
+
     connect(ui->svgLayout, &SvgLayout::ready, this, [this](){
         this->ui->svgLayout->setSize(
             this->ui->canvasWidth->value(),
             this->ui->canvasWidth->value()
         );
+    });
+
+    connect(ui->svgLayout, &SvgLayout::itemAdded, this, [this](QString name, int id){
+        auto item = new QTreeWidgetItem({ QString::number(id), name });
+        this->ui->svgList->addTopLevelItem(item);
     });
 }
 
@@ -72,5 +77,13 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_padding_valueChanged(double padding)
 {
     ui->svgLayout->setPadding(padding);
+    ui->svgLayout->layoutItems();
+}
+
+void MainWindow::on_remove_clicked()
+{
+    auto item = ui->svgList->selectedItems()[0];
+    ui->svgLayout->removeItem(item->text(0).toInt());
+    delete item;
     ui->svgLayout->layoutItems();
 }

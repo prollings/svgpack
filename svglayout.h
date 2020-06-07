@@ -19,6 +19,8 @@ public:
 
     bool addItem(QString path);
 
+    void removeItem(int id);
+
     void setSize(size_t width, size_t height);
 
     void setDrawBoundingBoxes(bool draw);
@@ -35,9 +37,11 @@ private:
     bool drawBoundingBoxes;
     QGraphicsRectItem* sizeRect;
     QVector<QGraphicsRectItem*> itemBoxes;
+    int last_id;
 
 signals:
     void ready();
+    void itemAdded(QString name, int id);
 };
 
 #endif // SVGLAYOUT_H

@@ -28,6 +28,8 @@ private slots:
 
     void on_padding_valueChanged(double arg1);
 
+    void on_remove_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
