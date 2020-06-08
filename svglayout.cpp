@@ -70,6 +70,7 @@ void SvgLayout::removeItem(int id)
     for (auto item : scene()->items()) {
         if (item->data(1) == id) {
             scene()->removeItem(item);
+            delete item;
             break;
         }
     }
