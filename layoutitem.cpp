@@ -18,6 +18,11 @@ void LayoutItem::setSvg(QGraphicsSvgItem *svg)
     this->m_svg->setParentItem(this);
 }
 
+void LayoutItem::setPath(QString path)
+{
+    this->m_path = path;
+}
+
 int LayoutItem::type() const
 {
     return Type;
@@ -31,4 +36,9 @@ QGraphicsRectItem* LayoutItem::bb()
 QGraphicsSvgItem* LayoutItem::svg()
 {
     return this->m_svg;
+}
+
+QString LayoutItem::path()
+{
+    return this->m_path;
 }

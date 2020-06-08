@@ -42,6 +42,7 @@ bool SvgLayout::addItem(QString path)
     auto container = new LayoutItem();
     container->setData(0, ItemType::CONTAINER);
     container->setData(1, id);
+    container->setPath(path);
 
     auto item = new QGraphicsSvgItem(path);
     item->setData(0, ItemType::SVG);
