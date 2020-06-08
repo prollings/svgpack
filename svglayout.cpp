@@ -77,6 +77,18 @@ void SvgLayout::removeItem(int id)
     }
 }
 
+void SvgLayout::duplicateItem(int id)
+{
+    for (auto item : scene()->items())
+    {
+        if (item->data(1) == id)
+        {
+            auto old_item = qgraphicsitem_cast<LayoutItem*>(item);
+            addItem(old_item->path());
+        }
+    }
+}
+
 void SvgLayout::setSize(size_t width, size_t height)
 {
     this->height = height;

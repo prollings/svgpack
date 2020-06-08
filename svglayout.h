@@ -21,6 +21,8 @@ public:
 
     void removeItem(int id);
 
+    void duplicateItem(int id);
+
     void setSize(size_t width, size_t height);
 
     void setDrawBoundingBoxes(bool draw);
