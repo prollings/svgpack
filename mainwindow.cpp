@@ -89,5 +89,12 @@ void MainWindow::on_remove_clicked()
     }
     ui->svgLayout->layoutItems();
 }
+
+void MainWindow::on_duplicate_clicked()
+{
+    for (auto item : ui->svgList->selectedItems())
+    {
+        ui->svgLayout->duplicateItem(item->text(0).toInt());
+    }
     ui->svgLayout->layoutItems();
 }

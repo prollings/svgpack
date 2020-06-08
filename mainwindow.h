@@ -30,6 +30,8 @@ private slots:
 
     void on_remove_clicked();
 
+    void on_duplicate_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
