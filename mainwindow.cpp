@@ -82,8 +82,12 @@ void MainWindow::on_padding_valueChanged(double padding)
 
 void MainWindow::on_remove_clicked()
 {
-    auto item = ui->svgList->selectedItems()[0];
-    ui->svgLayout->removeItem(item->text(0).toInt());
-    delete item;
+    for (auto item : ui->svgList->selectedItems())
+    {
+        ui->svgLayout->removeItem(item->text(0).toInt());
+        delete item;
+    }
+    ui->svgLayout->layoutItems();
+}
     ui->svgLayout->layoutItems();
 }
