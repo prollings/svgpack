@@ -37,7 +37,7 @@ private:
     bool drawBoundingBoxes;
     QGraphicsRectItem* sizeRect;
     QVector<QGraphicsRectItem*> itemBoxes;
-    int last_id;
+    int next_id;
 
 signals:
     void ready();

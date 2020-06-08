@@ -22,7 +22,7 @@ enum ContainerData {
 SvgLayout::SvgLayout(QWidget* parent) :
     QGraphicsView(parent),
     sizeRect(nullptr),
-    last_id(0)
+    next_id(0)
 {
     // init things once event timer starts
     QTimer::singleShot(0, this, [this](){
@@ -37,7 +37,7 @@ bool SvgLayout::addItem(QString path)
 {
     auto s = scene();
 
-    auto id = last_id++;
+    auto id = next_id++;
 
     auto container = new LayoutItem();
     container->setData(0, ItemType::CONTAINER);
