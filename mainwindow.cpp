@@ -16,16 +16,20 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->svgLayout->setScene(new QGraphicsScene(this));
 
-    connect(ui->svgLayout, &SvgLayout::ready, this, [this](){
+    connect(ui->svgLayout, &SvgLayout::ready, this, [this]() {
         this->ui->svgLayout->setSize(
             this->ui->canvasWidth->value(),
             this->ui->canvasWidth->value()
         );
     });
 
-    connect(ui->svgLayout, &SvgLayout::itemAdded, this, [this](QString name, int id){
+    connect(ui->svgLayout, &SvgLayout::itemAdded, this, [this](QString name, int id) {
         auto item = new QTreeWidgetItem({ QString::number(id), name });
         this->ui->svgList->addTopLevelItem(item);
+    });
+
+    connect(ui->svgLayout, &SvgLayout::itemDoesNotFit, this, [this](int id) {
+        ui->svgList->setRowFailed(id);
     });
 }
 
@@ -45,6 +49,7 @@ void MainWindow::on_load_clicked()
         ui->svgLayout->addItem(name);
     }
     ui->svgLayout->setPadding(ui->padding->value());
+    ui->svgList->clearRowStates();
     ui->svgLayout->layoutItems();
 }
 
@@ -77,6 +82,7 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_padding_valueChanged(double padding)
 {
     ui->svgLayout->setPadding(padding);
+    ui->svgList->clearRowStates();
     ui->svgLayout->layoutItems();
 }
 
@@ -87,6 +93,7 @@ void MainWindow::on_remove_clicked()
         ui->svgLayout->removeItem(item->text(0).toInt());
         delete item;
     }
+    ui->svgList->clearRowStates();
     ui->svgLayout->layoutItems();
 }
 
@@ -96,5 +103,6 @@ void MainWindow::on_duplicate_clicked()
     {
         ui->svgLayout->duplicateItem(item->text(0).toInt());
     }
+    ui->svgList->clearRowStates();
     ui->svgLayout->layoutItems();
 }
