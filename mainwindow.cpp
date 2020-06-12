@@ -56,11 +56,15 @@ void MainWindow::on_load_clicked()
 void MainWindow::on_canvasWidth_valueChanged(int width)
 {
     ui->svgLayout->setSize(width, ui->canvasHeight->value());
+    ui->svgList->clearRowStates();
+    ui->svgLayout->layoutItems();
 }
 
 void MainWindow::on_canvasHeight_valueChanged(int height)
 {
     ui->svgLayout->setSize(ui->canvasWidth->value(), height);
+    ui->svgList->clearRowStates();
+    ui->svgLayout->layoutItems();
 }
 
 void MainWindow::on_checkBox_toggled(bool checked)
