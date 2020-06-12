@@ -15,8 +15,8 @@ enum ItemType {
 };
 
 enum ContainerData {
-    SVG_IDX = 1,
-    BB_IDX = 2,
+    TYPE_IDX,
+    ID_IDX,
 };
 
 SvgLayout::SvgLayout(QWidget* parent) :
@@ -40,12 +40,12 @@ bool SvgLayout::addItem(QString path)
     auto id = next_id++;
 
     auto container = new LayoutItem();
-    container->setData(0, ItemType::CONTAINER);
-    container->setData(1, id);
+    container->setData(TYPE_IDX, ItemType::CONTAINER);
+    container->setData(ID_IDX, id);
     container->setPath(path);
 
     auto item = new QGraphicsSvgItem(path);
-    item->setData(0, ItemType::SVG);
+    item->setData(TYPE_IDX, ItemType::SVG);
     item->setFlags(QGraphicsItem::ItemClipsToShape);
     item->setCacheMode(QGraphicsItem::NoCache);
     item->setZValue(0);
@@ -53,7 +53,7 @@ bool SvgLayout::addItem(QString path)
     container->setSvg(item);
 
     auto bb = new QGraphicsRectItem();
-    bb->setData(0, ItemType::BB);
+    bb->setData(TYPE_IDX, ItemType::BB);
     bb->setRect(item->boundingRect());
     bb->setPen(QColor(0, 255, 0, 255));
     bb->hide();
@@ -69,7 +69,7 @@ bool SvgLayout::addItem(QString path)
 void SvgLayout::removeItem(int id)
 {
     for (auto item : scene()->items()) {
-        if (item->data(1) == id) {
+        if (item->data(ID_IDX) == id) {
             scene()->removeItem(item);
             delete item;
             break;
@@ -81,7 +81,7 @@ void SvgLayout::duplicateItem(int id)
 {
     for (auto item : scene()->items())
     {
-        if (item->data(1) == id)
+        if (item->data(ID_IDX) == id)
         {
             auto old_item = qgraphicsitem_cast<LayoutItem*>(item);
             addItem(old_item->path());
@@ -108,7 +108,7 @@ void SvgLayout::setDrawBoundingBoxes(bool draw)
 void SvgLayout::setPadding(double padding)
 {
     for (auto item : scene()->items()) {
-        if (item->data(0) == ItemType::CONTAINER) {
+        if (item->data(TYPE_IDX) == ItemType::CONTAINER) {
             auto group = qgraphicsitem_cast<LayoutItem*>(item);
             auto svg = group->svg();
             auto bb = group->bb();
@@ -126,7 +126,7 @@ void SvgLayout::layoutItems()
 {
     QVector<QGraphicsItem*> items {};
     for (auto item : scene()->items()) {
-        if (item->data(0) == ItemType::CONTAINER) {
+        if (item->data(TYPE_IDX) == ItemType::CONTAINER) {
             items.push_back(item);
         }
     }
