@@ -44,6 +44,7 @@ private:
 signals:
     void ready();
     void itemAdded(QString name, int id);
+    void itemDoesNotFit(int id);
 };
 
 #endif // SVGLAYOUT_H

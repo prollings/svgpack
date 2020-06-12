@@ -140,15 +140,18 @@ void SvgLayout::layoutItems()
         QRect(0, 0, this->width, this->height)
     };
     auto ep_eq = [](auto a, auto b) {
-        return std::abs(a - b) < 0.1;
+        return std::abs(b - a) < 0.1;
     };
     // look through items for biggest item to fit into smallest space
-    for (int iii = 0; iii < items.length(); ++iii) {
+    for (int iii = 0; iii < items.length(); ++iii)
+    {
         auto item = items[iii];
         auto bb = item->childrenBoundingRect();
         auto bbw = bb.width();
         auto bbh = bb.height();
-        for (int jjj = spaces.length() - 1; jjj >= 0; --jjj) {
+        bool fits = false;
+        for (int jjj = spaces.length() - 1; jjj >= 0; --jjj)
+        {
             auto& space = spaces[jjj];
             auto sw = space.width();
             auto sh = space.height();
@@ -167,8 +170,13 @@ void SvgLayout::layoutItems()
                 spaces.push_back(QRect(space.x() + bbw, space.y(), sw - bbw, bbh));
                 spaces[jjj].adjust(0, bbh, 0, 0); // above may invalidate space ref
             }
+            fits = true;
             break;
         }
+        if (fits == false) {
+            emit itemDoesNotFit(item->data(ID_IDX).toInt());
+        }
+        item->setVisible(fits);
     }
 }
 
